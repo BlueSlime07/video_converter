@@ -42,9 +42,6 @@ VIDEO_EXTENSIONS = {
 TMP_DIR = Path("/tmp/video-archive-converter")
 TMP_FILE = TMP_DIR / "recoded.mkv"
 
-def cerr(*args):
-    print(*args,file=sys.stderr)
-
 def print_info(*orgs):
     print(BLUE,end="")
     print(*orgs,end="")
@@ -71,9 +68,9 @@ def print_cyan(*orgs):
     print(RESET)
 
 def print_error(*orgs):
-    cerr(RED,end="")
-    cerr(*orgs,end="")
-    cerr(RESET)
+    print(RED,end="",file=sys.stderr)
+    print(*orgs,end="", file=sys.stderr)
+    print(RESET, file=sys.stderr)
 
 def scan_files(input_dir: Path) -> list[Path]:
     """
