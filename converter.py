@@ -45,6 +45,36 @@ TMP_FILE = TMP_DIR / "recoded.mkv"
 def cerr(*args):
     print(*args,file=sys.stderr)
 
+def print_info(*orgs):
+    print(BLUE,end="")
+    print(*orgs,end="")
+    print(RESET)
+
+def print_success(*orgs):
+    print(GREEN,end="")
+    print(*orgs,end="")
+    print(RESET)
+
+def print_status(*orgs):
+    print(YELLOW,end="")
+    print(*orgs,end="")
+    print(RESET)
+
+def print_title(*orgs):
+    print(MAGENTA,end="")
+    print(*orgs,end="")
+    print(RESET)
+
+def print_cyan(*orgs):
+    print(CYAN,end="")
+    print(*orgs,end="")
+    print(RESET)
+
+def print_error(*orgs):
+    cerr(RED,end="")
+    cerr(*orgs,end="")
+    cerr(RESET)
+
 def scan_files(input_dir: Path) -> list[Path]:
     """
     Return a list containing every file inside input_dir recursively.
@@ -58,18 +88,17 @@ def scan_files(input_dir: Path) -> list[Path]:
 
     return files
 
-def filter_videos(files: list[Path]) -> list[Path]:
+def split_files(files: list[Path], videos: list[Path], other_files: list[Path]) -> None:
     """
-    Keep only video files.
+    Split files into videos and non-video files.
     """
-
-    videos = []
 
     for file in files:
         if file.suffix.lower() in VIDEO_EXTENSIONS:
             videos.append(file)
+        else:
+            other_files.append(file)
 
-    return videos
 
 def create_output_directory(input_dir: Path) -> Path:
     """
@@ -190,42 +219,59 @@ def mux_video(tmp_file: Path, original_file: Path, output_file: Path,) -> bool:
 
     return result.returncode == 0
 
+def copy_other_files(other_files: list[Path], input_dir: Path, output_dir: Path)->None:
+    """
+    It copies all files that are not videos.
+    """
+
+    for file in other_files:
+        output_path = get_output_path(
+            input_dir,
+            output_dir,
+            file,
+        )
+        try:
+            shutil.copy2(file,output_path)
+        except OSError as e:
+            print_error(f"error to copy {file} to {output_path}")
+            print_error(f"error: \n{e}")
 
 def main():
 
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <input_directory>")
+        print_info(f"Usage: {sys.argv[0]} <input_directory>")
         sys.exit(1)
 
     input_dir = Path(sys.argv[1]).resolve()
 
     if not input_dir.exists():
-        cerr(f"{RED}Error: '{input_dir}' does not exist.{RESET}")
+        print_error(f"Error: '{input_dir}' does not exist.")
         sys.exit(1)
 
     if not input_dir.is_dir():
-        cerr(f"{RED}Error: '{input_dir}' is not a directory.{RESET}")
+        print_error(f"Error: '{input_dir}' is not a directory.")
         sys.exit(1)
     
     if shutil.which("ffmpeg") is None:
-        cerr(f"{RED}ffmpeg not found.{RESET}")
+        print_error(f"ffmpeg not found.")
         sys.exit(1)
 
     if shutil.which("mkvmerge") is None:
-        cerr(f"{RED}mkvmerge not found{RESET}")
+        print_error(f"mkvmerge not found")
         sys.exit(1)
 
     files = scan_files(input_dir)
     success = 0
     failed = 0
-    failed_files=[]
+    failed_files = []
 
-    print(f"{BLUE}Found {len(files)} file(s).{RESET}")
-
-    videos = filter_videos(files)
-    print(f"{BLUE}Found {len(videos)} video(s).{RESET}")
+    print_info(f"Found {len(files)} file(s).")
+    other_files = []
+    videos = []
+    split_files(files,videos,other_files)
+    print_info(f"Found {len(videos)} video(s).")
     output_dir = create_output_directory(input_dir)
-    print(f"{BLUE}output directory: {output_dir}{RESET}")
+    print_info(f"output directory: {output_dir}")
     print()
 
     for index, video in enumerate(videos, start=1):
@@ -235,26 +281,34 @@ def main():
             output_dir,
             video,
         )
-        print(f"{YELLOW}\n\n[{index}/{len(videos)}] {video.relative_to(input_dir)}\n\n{RESET}")
+        print_status(f"\n[{index}/{len(videos)}] {video.relative_to(input_dir)}\n")
 
         if not encode_video(video, TMP_FILE):
-            cerr(f"{RED}Failed to encode: {video}{RESET}")
+            print_error(f"Failed to encode: {video}")
             failed+=1
             failed_files.append(video.relative_to(input_dir))
             continue
         if not mux_video(TMP_FILE, video, output_path):
-            cerr(f"{RED}Failed to mux: {video}{RESET}")
+            print_error(f"Failed to mux: {video}")
             failed+=1
             failed_files.append(video.relative_to(input_dir))
             continue
         success+=1
-
+    
+    print_cyan(f"Copying other files...")
+    copy_other_files(other_files,input_dir,output_dir)
+    
     if TMP_FILE.exists():TMP_FILE.unlink()
-    print(f"\n\n{GREEN}Done.\nSuccess: {success}{RESET}{RED}\nFailed: {failed}{RESET}")
+    #print(f"\n\n{GREEN}Done.\nSuccess: {success}{RESET}{RED}\nFailed: {failed}{RESET}")
+    
+    
+    print_success(f"done.\nSuccess: {success}")
+    print_error(f"Faild: {failed}")
+
     if failed:
-        cerr(f"{RED}Failed file:{RESET}")
+        print_error(f"Failed file:")
         for file in failed_files:
-            cerr(f"\t{file}")
+            print_error(f"\t{file}")
 
 if __name__ == "__main__":
     main()
