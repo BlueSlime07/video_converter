@@ -260,7 +260,7 @@ def copy_other_files(other_files: list[Path], input_dir: Path, output_dir: Path)
 def main():
 
     if len(sys.argv) != 2:
-        print_info(f"Usage: {sys.argv[0]} <input_directory>")
+        print_error(f"Usage: {sys.argv[0]} <input_directory>")
         sys.exit(1)
 
     input_dir = Path(sys.argv[1]).resolve()
