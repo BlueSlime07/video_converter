@@ -244,9 +244,9 @@ def main():
     if TMP_FILE.exists():TMP_FILE.unlink()
     print(f"\nDone.\nSuccess: {success}\nFailed: {failed}")
     if failed:
-        print("Failed file:")
+        cerr("Failed file:")
         for file in failed_files:
-            print(f"\t{file}")
+            cerr(f"\t{file}")
 
 if __name__ == "__main__":
     main()
