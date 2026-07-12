@@ -220,18 +220,42 @@ def copy_other_files(other_files: list[Path], input_dir: Path, output_dir: Path)
     """
     It copies all files that are not videos.
     """
+    if not other_files:
+        print_info("\tNo additional files to copy.")
+        return
+    
+    total = len(other_files)
+    success = 0
+    failed = 0
+    failed_files = []
 
-    for file in other_files:
+    print_info(f"\t{total} File(s) need to be copied.")
+
+    for index, file in enumerate(other_files,start=1):
         output_path = get_output_path(
             input_dir,
             output_dir,
             file,
         )
+        
         try:
+            print_status(f"\t[{index}/{total}] Copying {file.relative_to(input_dir.parent)}")
             shutil.copy2(file,output_path)
+            print()
+            success+=1
         except OSError as e:
-            print_error(f"error to copy {file} to {output_path}")
-            print_error(f"error: \n{e}")
+            print_error(f"\terror to copy {file} to {output_path}")
+            print_error(f"\terror: \n{e}")
+            failed+=1
+            failed_files.append(file)
+    print_success(f"\tCopy Done.")
+    print_success(f"\tSuccess: {success}")
+    print_error(f"\tFailed: {failed}")
+    if failed:
+        for file in failed_files:
+            print_error(f"\t\t{file.relative_to(input_dir.parent)}")
+
+    
 
 def main():
 
@@ -296,9 +320,7 @@ def main():
     copy_other_files(other_files,input_dir,output_dir)
     
     if TMP_FILE.exists():TMP_FILE.unlink()
-    #print(f"\n\n{GREEN}Done.\nSuccess: {success}{RESET}{RED}\nFailed: {failed}{RESET}")
-    
-    
+
     print_success(f"done.\nSuccess: {success}")
     print_error(f"Faild: {failed}")
 
