@@ -1,0 +1,16 @@
+from enum import IntEnum,auto
+
+class ContainerPolicy(IntEnum):
+    MKV = auto()
+    MP4_FAMILY = auto()
+    WEBM = auto()
+    PROFESSIONAL = auto()
+    LEGACY = auto()
+
+class ControlModes:
+    def __init__(self):
+        self.COPY=True
+        self.FORCE_MKV = False
+        self.IN_PLACE = False
+
+flag_control = ControlModes()

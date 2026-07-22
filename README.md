@@ -1,121 +1,194 @@
-## A simple, predictable, and reliable video archive converter.
+# Video Archive Converter
 
-# Video Converter
+A simple, predictable, and reliable video archive converter for Linux.
 
-A simple video archive converter for Linux.
+Video Archive Converter recursively scans a directory, converts supported videos to **H.264 720p** using FFmpeg, and rebuilds the final container while preserving non-video streams whenever possible.
 
-The goal of this project is to convert every video inside a directory into a standardized format suitable for long-term storage and media servers such as Jellyfin.
+The project is designed for building standardized video archives suitable for media servers such as Jellyfin or for long-term personal storage.
 
-The program recursively scans an input directory, re-encodes every video to H.264 720p using FFmpeg, then rebuilds the final container using MKVToolNix (mkvmerge) so that non-video streams from the original file are preserved.
+---
 
 ## Features
 
-- Recursive directory scanning
-- Preserves the original directory structure
-- Creates the output directory next to the source directory
-- Encodes every video to H.264 (libx264)
-- Scales video to 720p
-- Uses CRF encoding
-- Uses mkvmerge to preserve non-video streams
-- Processes one file at a time
-- Displays progress during conversion
-- Reports failed files at the end
+* Recursive directory scanning
+* Preserves the original directory structure
+* Creates a separate output directory by default
+* Optional in-place conversion
+* Encodes video using **H.264 (libx264)**
+* Resizes video to **720p**
+* CRF-based encoding
+* Preserves:
+
+  * Audio tracks
+  * Subtitle tracks
+  * Attachments (MKV)
+  * Track language
+  * Track names
+  * Default/Forced flags
+* Supports automatic resume using a state file
+* Processes one file at a time to reduce disk usage
+* Displays conversion progress
+* Reports failed files at the end
+
+---
+
+## Supported Containers
+
+### Native containers
+
+These containers are processed while preserving their non-video streams.
+
+| Container | Status    |
+| --------- | --------- |
+| MKV       | Supported |
+| MP4       | Supported |
+| M4V       | Supported |
+| MOV       | Supported |
+| 3GP       | Supported |
+
+### Other containers
+
+The following containers are copied without modification by default:
+
+* AVI
+* ASF
+* FLV
+* MPEG
+* MPG
+* RM
+* RMVB
+* VOB
+* OGM
+* TS
+* WMV
+* WebM
+* MXF
+* M2TS
+* MTS
+
+Use `--force-mkv` if you want to convert these containers into MKV.
+
+---
 
 ## Output Directory
 
-If the input directory is
+By default the program creates a new directory next to the source directory.
+
+Example:
 
 ```
 Movies/
 ```
 
-the output directory will be
+becomes
 
 ```
 Movies.fs/
 ```
 
-`.fs` stands for **For Server**.
+The suffix `.fs` stands for **For Server**.
 
-The directory structure inside the output directory is preserved.
+The original directory structure is preserved.
+
+---
+
+## Command Line Options
+
+| Option              | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| `-h`, `--help`      | Show help information                              |
+| `-n`, `--no-copy`   | Do not copy non-video files                        |
+| `-f`, `--force-mkv` | Convert unsupported containers to MKV              |
+| `-i`, `--in-place`  | Replace original files after successful conversion |
+| `-r`, `--refresh`   | Refresh the state file                             |
+
+---
 
 ## Requirements
 
-- Python 3
-- FFmpeg
-- MKVToolNix
+* Python 3.11+
+* FFmpeg
+* FFprobe
+* MKVToolNix
+* GPAC (MP4Box)
 
-On Arch Linux:
+### Arch Linux
 
 ```bash
-sudo pacman -Sy ffmpeg mkvtoolnix
+sudo pacman -S ffmpeg mkvtoolnix gpac python
 ```
+
+---
 
 ## Usage
 
-```bash
-python converter.py /path/to/Movies
-```
-or better
+Convert an entire directory:
+
 ```bash
 converter.py /path/to/Movies
 ```
 
-Example:
+Convert unsupported containers to MKV:
 
 ```bash
-python converter.py "/mnt/media/Movies"
+converter.py Movies --force-mkv
 ```
 
-## Current Encoding Settings
+Replace original files:
 
-Video codec:
-
-```
-libx264
+```bash
+converter.py Movies --in-place
 ```
 
-Preset:
+Skip copying non-video files:
 
-```
-slow
-```
-
-CRF:
-
-```
-20
+```bash
+converter.py Movies --no-copy
 ```
 
-Resolution:
+Refresh the state file:
 
-```
-720p
-```
-
-Pixel format:
-
-```
-yuv420p
+```bash
+converter.py Movies --refresh
 ```
 
-## Project Goals
+---
 
-This project focuses on:
+## Encoding Settings
 
-- reducing archive size
-- preserving playback compatibility
-- preserving useful container data
-- keeping the implementation simple and maintainable
+| Setting      | Value           |
+| ------------ | --------------- |
+| Video Codec  | H.264 (libx264) |
+| Resolution   | 720p            |
+| Pixel Format | yuv420p         |
+| Preset       | Configurable    |
+| CRF          | Configurable    |
 
-The project intentionally avoids unnecessary complexity during early development.
+---
 
-## Current Status
+## State File
 
-This is an early development version.
+The converter stores its progress in a state file located inside the output directory.
 
-The encoding pipeline is functional, but additional testing with different media collections is still required.
+This allows interrupted conversions to continue without reprocessing files that have already been completed.
+
+The `--refresh` option updates the state file when files have been added, removed, or renamed.
+
+---
+
+## Design Goals
+
+The project focuses on:
+
+* Predictable behavior
+* Safe file handling
+* Reliable long-running conversions
+* Simple implementation
+* Low memory usage
+* Media server compatibility
+
+---
 
 ## License
 
-MIT
+MIT License
