@@ -126,6 +126,21 @@ If your Debian release does not provide the `gpac` package in its official repos
 
 ---
 
+### Fedora
+
+FFmpeg is required for video conversion.
+
+Fedora does not include FFmpeg in the default repositories.
+Install RPM Fusion before installing Video Archive Converter:
+
+```bash
+sudo dnf install \
+https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+```
+Then retry to install video-archive-converter.
+
+---
+
 ### Arch Linux
 
 ```bash
