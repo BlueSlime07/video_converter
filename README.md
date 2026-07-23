@@ -112,6 +112,27 @@ The original directory structure is preserved.
 * MKVToolNix
 * GPAC (MP4Box)
 
+## Debian / Ubuntu
+
+Video Archive Converter requires:
+
+- Python 3
+- FFmpeg
+- MKVToolNix
+- GPAC (MP4Box)
+
+Some Debian or Ubuntu releases do not include GPAC in their official repositories.
+
+If GPAC is unavailable, install it from the official GPAC repository:
+
+```sh
+sudo mkdir -p /etc/apt/keyrings
+wget -q -O - https://dist.gpac.io/gpac/linux/ubuntu/gpac.asc | sudo tee /etc/apt/keyrings/gpac.asc > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/gpac.asc] https://dist.gpac.io/gpac/linux/ubuntu $(lsb_release -cs) nightly" | sudo tee /etc/apt/sources.list.d/gpac.list
+sudo apt update
+sudo apt install gpac
+```
+---
 ### Arch Linux
 
 ```bash
