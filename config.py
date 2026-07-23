@@ -38,3 +38,6 @@ VIDEO_EXTENSIONS = {
     ".ts":ContainerPolicy.LEGACY,
     ".wmv":ContainerPolicy.LEGACY,
 }
+
+APP_NAME = "video-archive-converter"
+APP_VERSION = "1.0.0"

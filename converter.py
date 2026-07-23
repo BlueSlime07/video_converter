@@ -59,18 +59,17 @@ def copy_other_files(other_files: list[Path], input_dir: Path, output_dir: Path,
 def main():
 
     if len(sys.argv) < 2:
-        print_error(f"Invalid input.\ntry: {sys.argv[0]} --help")
+        print_error(f"Invalid input.\ntry: {APP_NAME} --help")
         sys.exit(1)
 
     if("-h" in sys.argv or "--help" in sys.argv):
-        prog = Path(sys.argv[0]).name
         print(f"""Video Archive Converter
 
 Convert video archives to H.264 720p while preserving audio, subtitles,
 attachments and container metadata whenever possible.
 
 Usage:
-    {prog} <input_directory> [OPTIONS]
+    {APP_NAME} <input_directory> [OPTIONS]
 
 Options:
     -h, --help
@@ -118,15 +117,15 @@ Requirements:
     MP4Box
 
 Examples:
-    {prog} Movies
+    {APP_NAME} Movies
 
-    {prog} Movies --force-mkv
+    {APP_NAME} Movies --force-mkv
 
-    {prog} Movies --no-copy
+    {APP_NAME} Movies --no-copy
 
-    {prog} Movies --in-place
+    {APP_NAME} Movies --in-place
 
-    {prog} Movies --refresh
+    {APP_NAME} Movies --refresh
 """)
         sys.exit(0)
     input_dir = Path(sys.argv[1]).resolve()
