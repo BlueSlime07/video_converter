@@ -112,27 +112,20 @@ The original directory structure is preserved.
 * MKVToolNix
 * GPAC (MP4Box)
 
-## Debian / Ubuntu
+### Debian
 
-Video Archive Converter requires:
+Before installing the Video Archive Converter package, make sure all required dependencies are available on your system.
 
-- Python 3
-- FFmpeg
-- MKVToolNix
-- GPAC (MP4Box)
+In particular, verify that `gpac` (which provides `MP4Box`) is installed.
 
-Some Debian or Ubuntu releases do not include GPAC in their official repositories.
-
-If GPAC is unavailable, install it from the official GPAC repository:
-
-```sh
-sudo mkdir -p /etc/apt/keyrings
-wget -q -O - https://dist.gpac.io/gpac/linux/ubuntu/gpac.asc | sudo tee /etc/apt/keyrings/gpac.asc > /dev/null
-echo "deb [signed-by=/etc/apt/keyrings/gpac.asc] https://dist.gpac.io/gpac/linux/ubuntu $(lsb_release -cs) nightly" | sudo tee /etc/apt/sources.list.d/gpac.list
-sudo apt update
+```bash
 sudo apt install gpac
 ```
+
+If your Debian release does not provide the `gpac` package in its official repositories, install GPAC using a method appropriate for your distribution before installing Video Archive Converter.
+
 ---
+
 ### Arch Linux
 
 ```bash
