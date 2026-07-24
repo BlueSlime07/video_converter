@@ -156,10 +156,6 @@ Examples:
 
     
 
-
-    flag_control.COPY = True
-    flag_control.FORCE_MKV = False
-    flag_control.IN_PLACE = False
     if "--no-copy" in sys.argv or "-n" in sys.argv:
         flag_control.COPY = False
     if "--force-mkv" in sys.argv or "-f" in sys.argv:

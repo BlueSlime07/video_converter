@@ -169,7 +169,7 @@ def get_video_track_id(path: Path) -> int | None:
                 "-v", "error",
                 "-select_streams", "v:0",
                 "-show_entries", "stream=id",
-                "-of", "csv=p=0",
+                "-of", "default=noprint_wrappers=1:nokey=1",
                 str(path),
             ],
             capture_output=True,
